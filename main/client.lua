@@ -1,0 +1,118 @@
+local QBCore = exports['qb-core']:GetCoreObject()
+
+local display = false
+
+RegisterNUICallback("exit", function(data)
+    SetDisplay(false)
+end)
+
+
+
+function SetDisplay(bool)
+    display = bool
+    SetNuiFocus(bool, bool)
+    SendNUIMessage({
+        type = "ui",
+        status = bool,
+    })
+end
+
+Citizen.CreateThread(function()
+    while true do 
+        local Sleep = 2000
+        local PlayerPedId = PlayerPedId()
+        local PlayerCoord = GetEntityCoords(PlayerPedId)
+        for i = 1, #Config.BlackMarket, 1 do
+            local DistanceBlackMarket = #(PlayerCoord - Config.BlackMarket[i].NPC)
+            if DistanceBlackMarket < 3.0 then
+                Sleep = 2
+                QBCore.Functions.DrawText3D(Config.BlackMarket[i].NPC.x, Config.BlackMarket[i].NPC.y, Config.BlackMarket[i].NPC.z + 2.0, '~r~E~w~ - '..Config.BlackMarket[i].Satici)
+                if IsControlJustPressed(0, 38) then
+                    QBCore.Functions.TriggerCallback('server:BlackMarket:server:PoliceSayi', function(count)
+                        if count >= Config.BlackMarket[i].Police then
+                            OpenBlackMarket()
+                        else
+                            QBCore.Functions.Notify("Şuan Olmaz!","Şehirde yeteri kadar polis yok!",3000,"error")
+                        end
+                    end)
+                end
+            end
+        end
+        Citizen.Wait(Sleep)
+    end
+end)
+
+function openMarket()
+    SetDisplay(not display)
+end
+
+RegisterNetEvent('openmarket')
+AddEventHandler('openmarket', function()
+    SetDisplay(not display)
+end)
+
+RegisterNUICallback("esya1", function()
+TriggerServerEvent("fraider:esya1")
+end)
+
+RegisterNUICallback("esya2", function()
+    TriggerServerEvent("fraider:esya2")
+end)
+
+
+RegisterNUICallback("esya3", function()
+    TriggerServerEvent("fraider:esya3")
+  end)
+
+RegisterNUICallback("esya4", function()
+TriggerServerEvent("fraider:esya4")
+end)
+
+
+RegisterNUICallback("esya5", function()
+TriggerServerEvent("fraider:esya5")
+end)
+
+RegisterNUICallback("esya6", function()
+    TriggerServerEvent("fraider:esya6")
+end)
+
+
+RegisterNUICallback("esya7", function()
+    TriggerServerEvent("fraider:esya7")
+end)
+
+function OpenBlackMarket()
+    openMarket()
+end
+
+Citizen.CreateThread(function()
+    for i = 1, #Config.BlackMarket, 1 do
+    RequestModel(Config.BlackMarket[i].Hash)
+    while not HasModelLoaded(Config.BlackMarket[i].Hash) do
+        Wait(1)
+    end
+    npc = CreatePed(1, Config.BlackMarket[i].Hash, Config.BlackMarket[i].NPC.x, Config.BlackMarket[i].NPC.y, Config.BlackMarket[i].NPC.z, Config.BlackMarket[i].Heading, false, true)
+    SetPedCombatAttributes(npc, 46, true)               
+    SetPedFleeAttributes(npc, 0, 0)               
+    SetBlockingOfNonTemporaryEvents(npc, true)
+    SetEntityAsMissionEntity(npc, true, true)
+    SetEntityInvincible(npc, true)
+    FreezeEntityPosition(npc, true)
+    end
+end)
+
+DrawText3D = function(x,y,z,text)
+    SetTextScale(0.35, 0.35)
+    SetTextFont(4)
+    SetTextProportional(1)
+    SetTextColour(255, 255, 255, 215)
+    SetTextEntry("STRING")
+    SetTextCentre(true)
+    AddTextComponentString(text)
+    SetDrawOrigin(x,y,z, 0)
+    DrawText(0.0, 0.0)
+    local factor = (string.len(text)) / 370
+    DrawRect(0.0, 0.0+0.0125, 0.017+ factor, 0.03, 0, 0, 0, 75)
+    ClearDrawOrigin()
+  end
