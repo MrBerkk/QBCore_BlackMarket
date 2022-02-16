@@ -3,7 +3,7 @@
 All Credits 
 https://github.com/hotraider
 
-Orginal Script: https://github.com/hotraider/fivemac-blackmarket
+Original Script: https://github.com/hotraider/fivemac-blackmarket
 
 
 I Just Converted For QBCore.
